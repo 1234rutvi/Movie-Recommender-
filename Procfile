@@ -1,1 +1,1 @@
-web: gunicorn movie_recommender:app
+web: gunicorn movie recommender:app
