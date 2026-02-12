@@ -1,1 +1,2 @@
-web: gunicorn movie recommender.py:app
+web: gunicorn movie_recommender:app
+
