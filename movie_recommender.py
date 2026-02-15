@@ -10,7 +10,10 @@ from flask import Flask, render_template, request
 import pickle
 
 movies = pickle.load(open("movies.pkl", "rb"))
-similarity = pickle.load(open("similarity.pkl", "rb"))
+cv = CountVectorizer(max_features=3000, stop_words="english")
+vectors = cv.fit_transform(movies["tags"]).toarray()
+similarity = cosine_similarity(vectors)
+
 
 
 # Merge datasets
