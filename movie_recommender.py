@@ -11,7 +11,7 @@ movies = pickle.load(open("movies.pkl", "rb"))
 
 # Lightweight vectorizer
 cv = CountVectorizer(max_features=1500, stop_words="english")
-vectors = cv.fit_transform(movies["tags"])   # ❗ NO toarray()
+vectors = cv.fit_transform(movies["tags"])  # keep sparse
 
 API_KEY = "YOUR_TMDB_API_KEY"
 
@@ -22,7 +22,7 @@ def fetch_poster(movie_id):
         data = requests.get(url, params=params, timeout=5).json()
         if data.get("poster_path"):
             return f"https://image.tmdb.org/t/p/w342/{data['poster_path']}"
-    except:
+    except Exception:
         pass
     return "https://via.placeholder.com/200x300?text=No+Poster"
 
@@ -32,7 +32,7 @@ def recommend(movie):
 
     index = movies[movies["title"] == movie].index[0]
 
-    # Compute similarity ONLY for one movie
+    # Compute similarity only for selected movie
     distances = cosine_similarity(vectors[index], vectors).flatten()
 
     movie_list = sorted(
@@ -43,8 +43,9 @@ def recommend(movie):
 
     names, posters = [], []
     for i in movie_list:
-        movie_id = movies.iloc[i[0]].id
-        names.append(movies.iloc[i[0]].title)
+        row = movies.iloc[i[0]]
+        movie_id = row["id"]          # ✅ FIX
+        names.append(row["title"])    # ✅ FIX
         posters.append(fetch_poster(movie_id))
 
     return names, posters
