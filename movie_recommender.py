@@ -7,13 +7,11 @@ from flask import Flask, render_template, request
 
 # ----------------- LOAD AND PROCESS DATA -----------------
 
-movies = pd.read_csv(
-    r"tmdb_5000_movies.csv"
-)
+import pickle
 
-credits = pd.read_csv(
-    r"tmdb_5000_credits.csv"
-)
+movies = pickle.load(open("movies.pkl", "rb"))
+similarity = pickle.load(open("similarity.pkl", "rb"))
+
 
 # Merge datasets
 movies = movies.merge(credits, on="title")
