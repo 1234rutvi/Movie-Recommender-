@@ -13,7 +13,10 @@ movies = pickle.load(open("movies.pkl", "rb"))
 cv = CountVectorizer(max_features=1500, stop_words="english")
 vectors = cv.fit_transform(movies["tags"])  # keep sparse
 
-API_KEY = "YOUR_TMDB_API_KEY"
+import os
+
+API_KEY = os.environ.get("b25a5793d33d4164e54869a6b9c8df22")
+
 
 def fetch_poster(movie_id):
     try:
