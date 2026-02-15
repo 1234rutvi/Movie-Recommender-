@@ -8,11 +8,11 @@ from flask import Flask, render_template, request
 # ----------------- LOAD AND PROCESS DATA -----------------
 
 movies = pd.read_csv(
-    r"C:\Users\HP\Downloads\Movie Recommendation System\tmdb_5000_movies.csv"
+    r"tmdb_5000_movies.csv"
 )
 
 credits = pd.read_csv(
-    r"C:\Users\HP\Downloads\Movie Recommendation System\tmdb_5000_credits.csv"
+    r"tmdb_5000_credits.csv"
 )
 
 # Merge datasets
