@@ -1,6 +1,9 @@
-gunicorn
 flask
+gunicorn
 requests
 scikit-learn
+numpy
+pandas
+
 
 
