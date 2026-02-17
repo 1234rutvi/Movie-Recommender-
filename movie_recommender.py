@@ -73,11 +73,9 @@ def recommend(movie):
 
         return [], []
  
-    # Normalize input
+    # Normalize
 
     movie_clean = movie.strip().lower()
- 
-    # Build a normalized title column for matching
 
     titles_lower = movies["title"].str.strip().str.lower()
  
@@ -93,19 +91,39 @@ def recommend(movie):
 
     distances = cosine_similarity(vectors[index], vectors).flatten()
  
-    movie_list = sorted(
+    # If all similarities are zero (except itself), fallback
 
-        list(enumerate(distances)),
+    if distances.sum() == 0:
 
-        key=lambda x: x[1],
+        print("⚠️ All similarities are zero for:", movie)
 
-        reverse=True
+        # Fallback: pick next 5 movies by index (skip itself)
 
-    )[1:6]
+        candidate_indices = [i for i in range(len(movies)) if i != index][:5]
+
+    else:
+
+        # Normal path
+
+        candidate_indices = [
+
+            i for i, _ in sorted(
+
+                list(enumerate(distances)),
+
+                key=lambda x: x[1],
+
+                reverse=True
+
+            )
+
+            if i != index
+
+        ][:5]
  
     names, posters = [], []
  
-    for idx, _ in movie_list:
+    for idx in candidate_indices:
 
         row = movies.iloc[int(idx)]
  
@@ -124,7 +142,7 @@ def recommend(movie):
     print("✅ Recommended:", names)
 
     return names, posters
- 
+
  
 # ----------------------------
 
