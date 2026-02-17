@@ -21,6 +21,12 @@ app = Flask(__name__)
 # ----------------------------
 
 movies = pickle.load(open("movies.pkl", "rb"))
+print("📊 Movies shape:", movies.shape)
+
+print("📊 Movies columns:", movies.columns.tolist())
+
+print("📊 Sample rows:\n", movies.head())
+
  
 # Ensure required columns exist
 
@@ -73,53 +79,41 @@ def recommend(movie):
 
         return [], []
  
-    # Normalize
-
     movie_clean = movie.strip().lower()
 
-    titles_lower = movies["title"].str.strip().str.lower()
+    titles_lower = movies["title"].astype(str).str.strip().str.lower()
  
     if movie_clean not in titles_lower.values:
 
         print("❌ Movie not found in dataset:", movie)
 
+        print("Sample titles:", titles_lower.head().tolist())
+
         return [], []
  
     index = titles_lower[titles_lower == movie_clean].index[0]
  
-    # Compute similarity
-
     distances = cosine_similarity(vectors[index], vectors).flatten()
  
-    # If all similarities are zero (except itself), fallback
+    print("🔎 Distances (first 10):", distances[:10])
 
-    if distances.sum() == 0:
+    print("🔎 Non-zero count:", (distances > 0).sum())
+ 
+    # Get top indices excluding itself (even if all are zero)
 
-        print("⚠️ All similarities are zero for:", movie)
+    ranked = sorted(
 
-        # Fallback: pick next 5 movies by index (skip itself)
+        list(enumerate(distances)),
 
-        candidate_indices = [i for i in range(len(movies)) if i != index][:5]
+        key=lambda x: x[1],
 
-    else:
+        reverse=True
 
-        # Normal path
-
-        candidate_indices = [
-
-            i for i, _ in sorted(
-
-                list(enumerate(distances)),
-
-                key=lambda x: x[1],
-
-                reverse=True
-
-            )
-
-            if i != index
-
-        ][:5]
+    )
+ 
+    candidate_indices = [i for i, _ in ranked if i != index][:5]
+ 
+    print("🎯 Candidate indices:", candidate_indices)
  
     names, posters = [], []
  
@@ -127,21 +121,29 @@ def recommend(movie):
 
         row = movies.iloc[int(idx)]
  
+        title = str(row.get("title"))
+
         movie_id = row.get("id")
-
-        title = row.get("title")
  
-        if pd.isna(movie_id) or pd.isna(title):
+        # Always append title
 
-            continue
- 
         names.append(title)
-
-        posters.append(fetch_poster(int(movie_id)))
  
-    print("✅ Recommended:", names)
+        # Poster: only fetch if id is valid
+
+        if pd.isna(movie_id):
+
+            posters.append("https://via.placeholder.com/200x300?text=No+Poster")
+
+        else:
+
+            posters.append(fetch_poster(int(movie_id)))
+ 
+    print("✅ Final recommended names:", names)
 
     return names, posters
+
+ 
 
  
 # ----------------------------
