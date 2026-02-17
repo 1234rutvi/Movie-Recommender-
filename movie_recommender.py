@@ -84,9 +84,8 @@ def fetch_poster_by_title(title):
         print("Poster fetch error:", e)
  
     return "https://via.placeholder.com/200x300?text=No+Poster"
-
  
- def recommend(movie):
+def recommend(movie):
 
     if not movie:
 
