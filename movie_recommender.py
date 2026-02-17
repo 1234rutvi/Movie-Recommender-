@@ -51,30 +51,42 @@ API_KEY = "9289375bcb5071be85178eb46b8afe1a"  # replace with real one
 
 # ----------------------------
 
-def fetch_poster(movie_id):
+def fetch_poster_by_title(title):
 
     try:
 
-        url = f"https://api.themoviedb.org/3/movie/{movie_id}"
+        search_url = "https://api.themoviedb.org/3/search/movie"
 
-        params = {"api_key": API_KEY}
+        params = {
 
-        r = requests.get(url, params=params, timeout=5)
+            "api_key": API_KEY,
+
+            "query": title
+
+        }
+
+        r = requests.get(search_url, params=params, timeout=5)
 
         data = r.json()
+ 
+        results = data.get("results")
 
-        if data.get("poster_path"):
+        if results and len(results) > 0:
 
-            return "https://image.tmdb.org/t/p/w342/" + data["poster_path"]
+            poster_path = results[0].get("poster_path")
 
-    except Exception:
+            if poster_path:
 
-        pass
+                return "https://image.tmdb.org/t/p/w342/" + poster_path
 
+    except Exception as e:
+
+        print("Poster fetch error:", e)
+ 
     return "https://via.placeholder.com/200x300?text=No+Poster"
+
  
- 
-def recommend(movie):
+ def recommend(movie):
 
     if not movie:
 
@@ -94,13 +106,11 @@ def recommend(movie):
  
     index = titles_lower[titles_lower == movie_clean].index[0]
  
+    # Compute similarity
+
     distances = cosine_similarity(vectors[index], vectors).flatten()
  
-    print("🔎 Distances (first 10):", distances[:10])
-
-    print("🔎 Non-zero count:", (distances > 0).sum())
- 
-    # Get top indices excluding itself (even if all are zero)
+    # Rank movies (even if all similarities are zero)
 
     ranked = sorted(
 
@@ -112,8 +122,10 @@ def recommend(movie):
 
     )
  
+    # Pick top 5 excluding itself
+
     candidate_indices = [i for i, _ in ranked if i != index][:5]
- 
+
     print("🎯 Candidate indices:", candidate_indices)
  
     names, posters = [], []
@@ -124,25 +136,17 @@ def recommend(movie):
  
         title = str(row.get("title"))
 
-        movie_id = row.get("id")
- 
-        # Always append title
-
         names.append(title)
  
-        # Poster: only fetch if id is valid
+        # Fetch poster by TITLE (not by id)
 
-        if pd.isna(movie_id):
-
-            posters.append("https://via.placeholder.com/200x300?text=No+Poster")
-
-        else:
-
-            posters.append(fetch_poster(int(movie_id)))
+        posters.append(fetch_poster_by_title(title))
  
     print("✅ Final recommended names:", names)
 
     return names, posters
+
+ 
 
  
 
