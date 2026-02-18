@@ -4,62 +4,60 @@
 <meta charset="UTF-8">
 <title>Movie Recommendation System</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>  
- <div id="loading">
+</head>
+
+<body>
+
+<!-- Loading Screen -->
+<div id="loading">
   🚀 Waking up server… please wait
 </div>
 
+<!-- Main Content -->
 <div id="content" style="display:none;">
-  <!-- your existing page content -->
-</div>
 
-<body>
 <div class="container">
 <h1>🎬 Movie Recommendation System</h1>
- 
-    <!-- Movie selection form -->
+
+<!-- Movie selection form -->
 <form method="POST">
 <select name="movie" required>
 <option value="" disabled selected>Select a movie</option>
 
-            {% for movie in movie_names %}
+{% for movie in movie_names %}
 <option value="{{ movie }}">{{ movie }}</option>
+{% endfor %}
 
-            {% endfor %}
 </select>
 <button type="submit">Recommend</button>
 </form>
- 
-    <!-- Recommendations -->
+
+<!-- Recommendations -->
 <div class="results">
 
-        {% if recommendations %}
-
-            {% for name, poster in recommendations %}
-<div class="card">
-<img src="{{ poster }}" alt="{{ name }}"
-
-                         onerror="this.src='https://via.placeholder.com/200x300?text=No+Poster'">
-<p>{{ name }}</p>
-</div>
-
-            {% endfor %}
-
-        {% else %}
+{% if recommendations %}
+    {% for name, poster in recommendations %}
+    <div class="card">
+        <img src="{{ poster }}" alt="{{ name }}"
+        onerror="this.src='https://via.placeholder.com/200x300?text=No+Poster'">
+        <p>{{ name }}</p>
+    </div>
+    {% endfor %}
+{% else %}
 <p style="margin-top:20px;">Select a movie and click Recommend 🎥</p>
+{% endif %}
 
-        {% endif %}
 </div>
-</div> 
- <script>
-  window.onload = function () {
+</div>
+
+</div> <!-- end content -->
+
+<script>
+window.onload = function () {
     document.getElementById("loading").style.display = "none";
     document.getElementById("content").style.display = "block";
-  };
+};
 </script>
 
- 
 </body>
 </html>
-
- 
