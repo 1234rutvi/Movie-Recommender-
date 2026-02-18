@@ -4,9 +4,16 @@
 <meta charset="UTF-8">
 <title>Movie Recommendation System</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+</head>  
+ <div id="loading">
+  🚀 Waking up server… please wait
+</div>
+
+<div id="content" style="display:none;">
+  <!-- your existing page content -->
+</div>
+
 <body>
- 
 <div class="container">
 <h1>🎬 Movie Recommendation System</h1>
  
@@ -43,7 +50,14 @@
 
         {% endif %}
 </div>
-</div>
+</div> 
+ <script>
+  window.onload = function () {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  };
+</script>
+
  
 </body>
 </html>
